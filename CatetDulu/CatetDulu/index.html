@@ -1,0 +1,604 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CatetDulu</title>
+
+<style>
+
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    font-family:Arial,sans-serif;
+}
+
+body{
+    background:#0f172a;
+    color:white;
+    padding:30px;
+}
+
+.container{
+    max-width:900px;
+    margin:auto;
+}
+
+h1{
+    color:#4ade80;
+    margin-bottom:10px;
+}
+
+.quote{
+    color:#94a3b8;
+    margin-bottom:25px;
+}
+
+.cards{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(200px,1fr));
+    gap:20px;
+    margin-bottom:25px;
+}
+
+.card{
+    background:#1e293b;
+    padding:20px;
+    border-radius:15px;
+}
+
+.card h3{
+    margin-bottom:10px;
+}
+
+.card p{
+    font-size:28px;
+    font-weight:bold;
+}
+
+.green{
+    color:#4ade80;
+}
+
+.red{
+    color:#f87171;
+}
+
+.form-box,
+.history,
+.target-box{
+    background:#1e293b;
+    padding:20px;
+    border-radius:15px;
+    margin-bottom:25px;
+}
+
+input,
+select{
+    width:100%;
+    padding:12px;
+    margin-top:10px;
+    border:none;
+    border-radius:10px;
+    background:#334155;
+    color:white;
+}
+
+button{
+    width:100%;
+    padding:12px;
+    margin-top:15px;
+    border:none;
+    border-radius:10px;
+    background:#22c55e;
+    color:white;
+    font-weight:bold;
+    cursor:pointer;
+}
+
+button:hover{
+    opacity:0.9;
+}
+
+.transaction{
+    background:#334155;
+    padding:15px;
+    border-radius:12px;
+    margin-top:10px;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    gap:10px;
+}
+
+.delete-btn{
+    background:#ef4444;
+    width:auto;
+    padding:8px 12px;
+}
+
+.target-card{
+    margin-top:20px;
+    background:#334155;
+    padding:20px;
+    border-radius:12px;
+}
+
+.progress-bar{
+    width:100%;
+    height:20px;
+    background:#1e293b;
+    border-radius:20px;
+    overflow:hidden;
+    margin-top:15px;
+}
+
+.progress{
+    height:100%;
+    width:0%;
+    background:#22c55e;
+    transition:0.3s;
+}
+
+#progressText{
+    display:block;
+    margin-top:10px;
+    color:#cbd5e1;
+}
+
+.guide-text{
+    line-height:1.6;
+}
+
+@media(max-width:768px){
+
+    body{
+        padding:15px;
+    }
+
+    .cards{
+        grid-template-columns:1fr;
+    }
+
+    .transaction{
+        flex-direction:column;
+        align-items:flex-start;
+    }
+
+    .delete-btn{
+        width:100%;
+    }
+
+    .card p{
+        font-size:22px;
+    }
+
+    h1{
+        font-size:28px;
+    }
+
+}
+
+</style>
+</head>
+<body>
+
+<div class="container">
+
+    <h1>💸 CatetDulu</h1>
+
+    <p class="quote">
+        "Dompet tenang, hidup lumayan."
+    </p>
+
+    <!-- CARD -->
+    <div class="cards">
+
+        <div class="card">
+            <h3>Total Saldo</h3>
+            <p id="saldo">Rp 0</p>
+        </div>
+
+        <div class="card">
+            <h3 class="green">Pemasukan</h3>
+            <p id="income" class="green">Rp 0</p>
+        </div>
+
+        <div class="card">
+            <h3 class="red">Pengeluaran</h3>
+            <p id="expense" class="red">Rp 0</p>
+        </div>
+
+    </div>
+
+    <!-- TARGET -->
+    <div class="target-box">
+
+        <h2>🎯 Target Nabung</h2>
+
+        <input 
+            type="text" 
+            id="targetName" 
+            placeholder="Contoh: Beli Headset"
+        >
+
+        <input 
+            type="text" 
+            id="targetAmount" 
+            placeholder="Target uang"
+            oninput="formatInput(this)"
+        >
+
+        <button onclick="saveTarget()">
+            Simpan Target
+        </button>
+
+        <div class="target-card">
+
+            <h3 id="showTargetName">
+                Belum ada target
+            </h3>
+
+            <p>
+                Target:
+                <span id="showTargetAmount">
+                    Rp 0
+                </span>
+            </p>
+
+            <div class="progress-bar">
+                <div class="progress" id="progress"></div>
+            </div>
+
+            <small id="progressText">
+                0% tercapai
+            </small>
+
+        </div>
+
+    </div>
+
+    <!-- FORM -->
+    <div class="form-box">
+
+        <h2>Tambah Transaksi</h2>
+
+        <input 
+            type="text" 
+            id="title" 
+            placeholder="Nama transaksi"
+        >
+
+        <input 
+            type="text" 
+            id="amount" 
+            placeholder="Nominal"
+            oninput="formatInput(this)"
+        >
+
+        <select id="type">
+
+            <option value="income">
+                Pemasukan
+            </option>
+
+            <option value="expense">
+                Pengeluaran
+            </option>
+
+        </select>
+
+        <button onclick="addTransaction()">
+            Tambah
+        </button>
+
+    </div>
+
+    <!-- HISTORY -->
+    <div class="history">
+
+        <h2>Riwayat Transaksi</h2>
+
+        <div id="transactionList"></div>
+
+    </div>
+
+    <!-- GUIDE -->
+    <div class="history">
+
+        <h2>📖 Cara Pakai</h2>
+
+        <div class="transaction">
+            <div class="guide-text">
+                <strong>1. Tambah Transaksi</strong>
+                <br>
+                Isi nama transaksi, nominal, lalu pilih pemasukan atau pengeluaran.
+            </div>
+        </div>
+
+        <div class="transaction">
+            <div class="guide-text">
+                <strong>2. Atur Target Nabung</strong>
+                <br>
+                Isi nama target dan jumlah target uang untuk melihat progress tabungan.
+            </div>
+        </div>
+
+        <div class="transaction">
+            <div class="guide-text">
+                <strong>3. Saldo Otomatis</strong>
+                <br>
+                Saldo akan otomatis bertambah atau berkurang dari transaksi.
+            </div>
+        </div>
+
+    </div>
+
+</div>
+
+<script>
+
+let transactions =
+JSON.parse(localStorage.getItem("transactions")) || [];
+
+let target =
+JSON.parse(localStorage.getItem("target")) || {
+    name:"",
+    amount:0
+};
+
+function saveData(){
+
+    localStorage.setItem(
+        "transactions",
+        JSON.stringify(transactions)
+    );
+
+}
+
+function formatRupiah(number){
+
+    return "Rp " +
+    number.toLocaleString("id-ID");
+
+}
+
+function formatInput(input){
+
+    let value =
+    input.value.replace(/[^0-9]/g,'');
+
+    if(value === ""){
+
+        input.value = "";
+        return;
+
+    }
+
+    input.value =
+    parseInt(value).toLocaleString("id-ID");
+
+}
+
+function updateUI(){
+
+    const list =
+    document.getElementById("transactionList");
+
+    list.innerHTML = "";
+
+    let income = 0;
+    let expense = 0;
+
+    transactions.forEach((item,index)=>{
+
+        if(item.type === "income"){
+            income += item.amount;
+        }else{
+            expense += item.amount;
+        }
+
+        const div = document.createElement("div");
+
+        div.classList.add("transaction");
+
+        div.innerHTML = `
+
+            <div>
+
+                <strong>
+                    ${item.title}
+                </strong>
+
+                <br>
+
+                <small>
+                    ${
+                        item.type === "income"
+                        ? "Pemasukan"
+                        : "Pengeluaran"
+                    }
+                </small>
+
+            </div>
+
+            <div>
+
+                <strong>
+                    ${
+                        item.type === "income"
+                        ? "+"
+                        : "-"
+                    }
+
+                    ${formatRupiah(item.amount)}
+
+                </strong>
+
+                <br>
+
+                <button
+                    class="delete-btn"
+                    onclick="deleteTransaction(${index})"
+                >
+                    Hapus
+                </button>
+
+            </div>
+
+        `;
+
+        list.appendChild(div);
+
+    });
+
+    const saldo = income - expense;
+
+    document.getElementById("saldo").innerText =
+    formatRupiah(saldo);
+
+    document.getElementById("income").innerText =
+    formatRupiah(income);
+
+    document.getElementById("expense").innerText =
+    formatRupiah(expense);
+
+    updateTarget();
+
+}
+
+function addTransaction(){
+
+    const title =
+    document.getElementById("title").value;
+
+const amount =
+parseInt(
+    document
+    .getElementById("amount")
+    .value
+) * 1000;
+
+    const type =
+    document.getElementById("type").value;
+
+    if(title === "" || isNaN(amount)){
+
+        alert("Isi data dulu.");
+        return;
+
+    }
+
+    transactions.push({
+
+        title,
+        amount,
+        type
+
+    });
+
+    saveData();
+
+    updateUI();
+
+    document.getElementById("title").value = "";
+    document.getElementById("amount").value = "";
+
+}
+
+function deleteTransaction(index){
+
+    transactions.splice(index,1);
+
+    saveData();
+
+    updateUI();
+
+}
+
+function saveTarget(){
+
+    const name =
+    document.getElementById("targetName").value;
+
+const amount =
+parseInt(
+    document
+    .getElementById("targetAmount")
+    .value
+) * 1000;
+
+    if(name === "" || isNaN(amount)){
+
+        alert("Isi target dulu.");
+        return;
+
+    }
+
+    target = {
+
+        name,
+        amount
+
+    };
+
+    localStorage.setItem(
+        "target",
+        JSON.stringify(target)
+    );
+
+    updateTarget();
+
+}
+
+function updateTarget(){
+
+    document.getElementById("showTargetName").innerText =
+    target.name || "Belum ada target";
+
+    document.getElementById("showTargetAmount").innerText =
+    formatRupiah(target.amount || 0);
+
+    let income = 0;
+    let expense = 0;
+
+    transactions.forEach(item=>{
+
+        if(item.type === "income"){
+            income += item.amount;
+        }else{
+            expense += item.amount;
+        }
+
+    });
+
+    const saldo = income - expense;
+
+    let percent = 0;
+
+    if(target.amount > 0){
+
+        percent =
+        (saldo / target.amount) * 100;
+
+    }
+
+    if(percent > 100){
+        percent = 100;
+    }
+
+    document.getElementById("progress").style.width =
+    percent + "%";
+
+    document.getElementById("progressText").innerText =
+    Math.floor(percent) + "% tercapai";
+
+}
+
+updateUI();
+
+</script>
+
+</body>
+</html>
