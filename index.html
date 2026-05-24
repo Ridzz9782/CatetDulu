@@ -259,41 +259,47 @@ button:hover{
 
     </div>
 
-    <!-- FORM -->
-    <div class="form-box">
+   <!-- FORM -->
+<div class="form-box">
 
-        <h2>Tambah Transaksi</h2>
+    <h2>Tambah Transaksi</h2>
 
-        <input 
-            type="text" 
-            id="title" 
-            placeholder="Nama transaksi"
-        >
+    <input 
+        type="text" 
+        id="title" 
+        placeholder="Nama transaksi"
+    >
 
-        <input 
-            type="text" 
-            id="amount" 
-            placeholder="Nominal"
-            oninput="formatInput(this)"
-        >
+    <input 
+        type="text" 
+        id="amount" 
+        placeholder="Nominal"
+        oninput="formatInput(this)"
+    >
 
-        <select id="type">
+    <!-- TANGGAL -->
+    <input 
+        type="date" 
+        id="date"
+    >
 
-            <option value="income">
-                Pemasukan
-            </option>
+    <select id="type">
 
-            <option value="expense">
-                Pengeluaran
-            </option>
+        <option value="income">
+            Pemasukan
+        </option>
 
-        </select>
+        <option value="expense">
+            Pengeluaran
+        </option>
 
-        <button onclick="addTransaction()">
-            Tambah
-        </button>
+    </select>
 
-    </div>
+    <button onclick="addTransaction()">
+        Tambah
+    </button>
+
+</div>
 
     <!-- HISTORY -->
     <div class="history">
@@ -414,11 +420,17 @@ function updateUI(){
                 <br>
 
                 <small>
+
                     ${
                         item.type === "income"
                         ? "Pemasukan"
                         : "Pengeluaran"
                     }
+
+                    <br>
+
+                    📅 ${item.date}
+
                 </small>
 
             </div>
@@ -473,12 +485,16 @@ function addTransaction(){
     const title =
     document.getElementById("title").value;
 
-const amount =
-parseInt(
-    document
-    .getElementById("amount")
-    .value
-) * 1000;
+    const amount =
+    parseInt(
+        document
+        .getElementById("amount")
+        .value
+        .replace(/\./g,'')
+    ) * 1000;
+
+    const date =
+    document.getElementById("date").value;
 
     const type =
     document.getElementById("type").value;
@@ -494,7 +510,8 @@ parseInt(
 
         title,
         amount,
-        type
+        type,
+        date: date || new Date().toLocaleDateString("id-ID")
 
     });
 
@@ -522,12 +539,13 @@ function saveTarget(){
     const name =
     document.getElementById("targetName").value;
 
-const amount =
-parseInt(
-    document
-    .getElementById("targetAmount")
-    .value
-) * 1000;
+    const amount =
+    parseInt(
+        document
+        .getElementById("targetAmount")
+        .value
+        .replace(/\./g,'')
+    ) * 1000;
 
     if(name === "" || isNaN(amount)){
 
@@ -595,6 +613,9 @@ function updateTarget(){
     Math.floor(percent) + "% tercapai";
 
 }
+
+document.getElementById("date").value =
+new Date().toISOString().split("T")[0];
 
 updateUI();
 
